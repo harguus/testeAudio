@@ -112,16 +112,16 @@ export default class App extends Component{
     console.log('onStartPlay');
     const msg = await audioRecorderPlayer.startPlayer();
     console.log(msg);
-    this.audioRecorderPlayer.addPlayBackListener((e) => {
+    audioRecorderPlayer.addPlayBackListener((e) => {
       if (e.current_position === e.duration) {
         console.log('finished');
-        this.audioRecorderPlayer.stopPlayer();
+        audioRecorderPlayer.stopPlayer();
       }
       this.setState({
         currentPositionSec: e.current_position,
         currentDurationSec: e.duration,
-        playTime: this.audioRecorderPlayer.mmssss(Math.floor(e.current_position)),
-        duration: this.audioRecorderPlayer.mmssss(Math.floor(e.duration)),
+        playTime: audioRecorderPlayer.mmssss(Math.floor(e.current_position)),
+        duration: audioRecorderPlayer.mmssss(Math.floor(e.duration)),
       });
       return;
     });
@@ -150,7 +150,7 @@ export default class App extends Component{
           style={{height: 50, width: 150, borderRadius: 10, backgroundColor: '#000'}}
           onPressIn={() => this.permission()}
           >
-          <Text style={{color: "#fff", textAlign: 'center'}}>permição</Text>
+          <Text style={{color: "#fff", textAlign: 'center'}}>Dá permiçõe</Text>
         </TouchableOpacity>
       </View>
     );
