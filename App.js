@@ -16,6 +16,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
+import api from './API';
+
 import Permissions from 'react-native-permissions';
 
 import AudioRecorderPlayer from 'react-native-audio-recorder-player';
@@ -38,6 +40,46 @@ export default class App extends Component{
       currentDurationSec: 0,
       playTime: '00:00:00',
       duration: '00:00:00',
+      audio_uri: ''
+    }
+  }
+
+  enviar = async () => {
+    let formData = new FormData();
+
+    formData.append('audio', {
+      uri: this.state.audio_uri,
+      name: 'audio.mp4',
+      type: 'audio/x-mp4',
+    });
+
+    // Subistitua PARAMETRO E VALOR
+    formData.append('PARAMETRO', PARAMETRO);
+    try {
+      const response = await api.post(`API_URL`, formData, {
+        //PARAMETRO: VALOR,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(formData);
+      if (response.status == 200) {
+        ToastAndroid.showWithGravity(
+          "Audio enviado com sucesso verificado o console log.",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+        console.log(response.data);
+      }
+    } catch (error) {
+      ToastAndroid.showWithGravity(
+        "Error verificar console log.",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+      console.log(formData);
+      console.log(error.responde);
     }
   }
 
@@ -88,7 +130,7 @@ export default class App extends Component{
   }
 
   onStartRecord = async () => {
-    const result = await audioRecorderPlayer.startRecorder();
+    const file = await audioRecorderPlayer.startRecorder();
     audioRecorderPlayer.addRecordBackListener((e) => {
       this.setState({
         recordSecs: e.current_position,
@@ -96,7 +138,8 @@ export default class App extends Component{
       });
       return;
     });
-    console.log(result);
+    this.setState({})
+    console.log(`file uri: ${file}`);
   }
 
   onStopRecord = async () => {
@@ -132,25 +175,34 @@ export default class App extends Component{
       <View style={styles.container}>
         <Text>{this.state.recordTime}</Text>
         <TouchableOpacity
-          style={{height: 50, width: 150, borderRadius: 10, backgroundColor: '#000'}}
+          style={styles.bt}
           onPressIn={() => this.apertou()}
           onPressOut={() => this.onStopRecord()}
           onLongPress={() => this.onStartRecord()}
           >
-          <Text style={{color: "#fff", textAlign: 'center'}}>Teste</Text>
+          <Text style={styles.tx}>Teste</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={{height: 50, width: 150, borderRadius: 10, backgroundColor: '#000'}}
-          onPressIn={() => this.onStartPlay()}
-          >
-          <Text style={{color: "#fff", textAlign: 'center'}}>ouvir</Text>
-        </TouchableOpacity>
+
         <Text>{this.state.playTime}</Text>
         <TouchableOpacity
-          style={{height: 50, width: 150, borderRadius: 10, backgroundColor: '#000'}}
+          style={styles.bt}
+          onPressIn={() => this.onStartPlay()}
+          >
+          <Text style={styles.tx}>ouvir</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.bt}
           onPressIn={() => this.permission()}
           >
-          <Text style={{color: "#fff", textAlign: 'center'}}>Dá permiçõe</Text>
+          <Text style={styles.tx}>dá permissão</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.bt}
+          onPressIn={() => this.permission()}
+          >
+          <Text style={styles.tx}>enviar</Text>
         </TouchableOpacity>
       </View>
     );
@@ -174,4 +226,16 @@ const styles = StyleSheet.create({
     color: '#333333',
     marginBottom: 5,
   },
+  bt: {
+    height: 50,
+    width: 150,
+    borderRadius: 5,
+    backgroundColor: '#c3c3c3',
+    marginVertical: 10
+  },
+  tx: {
+    color: "#000",
+    fontSize: 20,
+    textAlign: 'center'
+  }
 });
