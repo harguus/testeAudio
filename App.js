@@ -50,11 +50,13 @@ export default class App extends Component{
       // Returns once the user has chosen to 'allow' or to 'not allow' access
       // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
       this.setState({ photoPermission: response })
+      console.log(response);
     })
     Permissions.request('storage').then(response => {
       // Returns once the user has chosen to 'allow' or to 'not allow' access
       // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
-      this.setState({ photoPermission: response })
+      this.setState({ photoPermission: response });
+      console.log(response);
     })
   }
 
@@ -86,7 +88,7 @@ export default class App extends Component{
   }
 
   onStartRecord = async () => {
-    const result = await audioRecorderPlayer.startRecorder(path);
+    const result = await audioRecorderPlayer.startRecorder();
     audioRecorderPlayer.addRecordBackListener((e) => {
       this.setState({
         recordSecs: e.current_position,
@@ -110,16 +112,16 @@ export default class App extends Component{
     console.log('onStartPlay');
     const msg = await audioRecorderPlayer.startPlayer();
     console.log(msg);
-    audioRecorderPlayer.addPlayBackListener((e) => {
+    this.audioRecorderPlayer.addPlayBackListener((e) => {
       if (e.current_position === e.duration) {
         console.log('finished');
-        audioRecorderPlayer.stopPlayer();
+        this.audioRecorderPlayer.stopPlayer();
       }
       this.setState({
         currentPositionSec: e.current_position,
         currentDurationSec: e.duration,
-        playTime: audioRecorderPlayer.mmssss(Math.floor(e.current_position)),
-        duration: audioRecorderPlayer.mmssss(Math.floor(e.duration)),
+        playTime: this.audioRecorderPlayer.mmssss(Math.floor(e.current_position)),
+        duration: this.audioRecorderPlayer.mmssss(Math.floor(e.duration)),
       });
       return;
     });
@@ -144,6 +146,12 @@ export default class App extends Component{
           <Text style={{color: "#fff", textAlign: 'center'}}>ouvir</Text>
         </TouchableOpacity>
         <Text>{this.state.playTime}</Text>
+        <TouchableOpacity
+          style={{height: 50, width: 150, borderRadius: 10, backgroundColor: '#000'}}
+          onPressIn={() => this.permission()}
+          >
+          <Text style={{color: "#fff", textAlign: 'center'}}>permição</Text>
+        </TouchableOpacity>
       </View>
     );
   }
